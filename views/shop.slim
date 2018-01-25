@@ -1,0 +1,26 @@
+.categories
+    h1 Categories
+    a href="/shop/tape" tape
+    a href="/shop/glue" glue
+
+.shop
+    .search
+        h3 Search
+    .articles
+        - i = 0
+        - while i < articles.length
+            p = articles[i][1]
+            p = "#{articles[i][2]} :-"
+            - i += 1
+
+
+.cart 
+    - i = 0
+    - total_price = 0
+    - while i < carts.length
+        p Article name: #{carts[1][i]} 
+        p Price: #{carts[0][i][1]} :-
+        - total_price += carts[0][i][1].to_i
+        - i += 1
+    p Total price: #{total_price} :-
+    
