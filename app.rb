@@ -21,6 +21,7 @@ class App < Sinatra::Base
 		session[:user] = {"id"=>1, "name"=>"test", "email"=>nil, "password"=>"$2a$10$SRXb1zAYFQOBpjHm.A8zceKr/mRkOI.QJiT7N4duD6m20j6A2lwtm", "account_type"=>nil, 0=>1, 1=>"test", 2=>nil, 3=>"$2a$10$SRXb1zAYFQOBpjHm.A8zceKr/mRkOI.QJiT7N4duD6m20j6A2lwtm", 4=>nil}
 		articles = get_articles()
 		carts = get_carts(session[:user]["id"])
+		p carts
 		slim(:shop, locals:{user: session[:user], articles: articles, carts: carts})
 	end
 
@@ -65,4 +66,12 @@ class App < Sinatra::Base
 			redirect('/login')
 		end
 	end    
+
+	post('/add_to_cart') do
+		article_id = params[:article_id]
+		user_id = session[:user]["id"].to_s
+
+		add_to_cart(article_id, user_id)
+		redirect('/shop')
+	end
 end
