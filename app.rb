@@ -18,11 +18,22 @@ class App < Sinatra::Base
 	end
 
 	get('/shop') do
-		session[:user] = {"id"=>1, "name"=>"test", "email"=>nil, "password"=>"$2a$10$SRXb1zAYFQOBpjHm.A8zceKr/mRkOI.QJiT7N4duD6m20j6A2lwtm", "account_type"=>nil, 0=>1, 1=>"test", 2=>nil, 3=>"$2a$10$SRXb1zAYFQOBpjHm.A8zceKr/mRkOI.QJiT7N4duD6m20j6A2lwtm", 4=>nil}
+		session[:user] = {"id"=>1, "name"=>"test", "email"=>nil, "password"=>"$2a$10$SRXb1zAYFQOBpjHm.A8zceKr/mRkOI.QJiT7N4duD6m20j6A2lwtm", "account_type"=>"admin", 0=>1, 1=>"test", 2=>nil, 3=>"$2a$10$SRXb1zAYFQOBpjHm.A8zceKr/mRkOI.QJiT7N4duD6m20j6A2lwtm", 4=>nil}
 		articles = get_articles()
 		carts = get_carts(session[:user]["id"])
-		p carts
 		slim(:shop, locals:{user: session[:user], articles: articles, carts: carts})
+	end
+
+	get('/admin') do
+		session[:user] = {"id"=>1, "name"=>"test", "email"=>nil, "password"=>"$2a$10$SRXb1zAYFQOBpjHm.A8zceKr/mRkOI.QJiT7N4duD6m20j6A2lwtm", "account_type"=>"admin", 0=>1, 1=>"test", 2=>nil, 3=>"$2a$10$SRXb1zAYFQOBpjHm.A8zceKr/mRkOI.QJiT7N4duD6m20j6A2lwtm", 4=>nil}		
+		user_id = session[:user]["id"]
+		account_type = get_account_type(user_id)
+		if account_type == "admin"
+			slim(:admin, locals:{user: session[:user], error: session[:error]})
+		else
+			session[:error] = "Not authorized."
+			redirect(back)
+		end		
 	end
 
 	post('/register') do
@@ -67,6 +78,10 @@ class App < Sinatra::Base
 		end
 	end    
 
+	post('/logout') do
+		session[:user] = nil
+	end
+
 	post('/add_to_cart') do
 		article_id = params[:article_id]
 		user_id = session[:user]["id"].to_s
@@ -74,4 +89,22 @@ class App < Sinatra::Base
 		add_to_cart(article_id, user_id)
 		redirect('/shop')
 	end
-end
+
+	post('/remove_from_cart') do
+		article_id = params[:article_id]
+		user_id = session[:user]["id"].to_s
+
+		remove_from_cart(article_id, user_id)
+		redirect('/shop')
+	end
+
+	post('/add_product') do
+		name = params[:article_name]
+		price = params[:article_price]
+		descripton = params[:article_description]
+		brand = params[:article_brand]
+		type = params[:article_type]
+
+		add_product(name, price, descripton, brand, type)
+		redirect('/admin')
+	end

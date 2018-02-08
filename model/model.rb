@@ -13,6 +13,12 @@ module TodoDB
         return result.first
     end
 
+    def get_account_type user_id
+        db = db_connect()
+
+        user = db.execute("SELECT account_type FROM users WHERE id=?", [user_id])[0][0]
+    end
+
     def create_user username, password
         db = db_connect()
         password_digest = BCrypt::Password.create(password)
@@ -23,17 +29,16 @@ module TodoDB
         db = db_connect()
         db.results_as_hash = false
 
-        test = db.execute("SELECT * FROM carts WHERE article_id = ? AND user_id = ?", [article_id, user_id])
-        p test
+        existing = db.execute("SELECT * FROM carts WHERE article_id = ? AND user_id = ?", [article_id, user_id])
 
-        if test != []
-            amount = db.execute("SELECT amount FROM carts WHERE id=?", test[0][0])[0][0]
+        if existing != []
+            amount = db.execute("SELECT amount FROM carts WHERE id=?", existing[0][0])[0][0]
             if amount == nil
                 amount = 1
             else
                 amount += 1
             end
-            db.execute("UPDATE carts SET amount =? WHERE id =?", [amount, test[0][0]])
+            db.execute("UPDATE carts SET amount =? WHERE id =?", [amount, existing[0][0]])
         else
             db.execute("INSERT INTO carts(article_id, user_id) VALUES (?,?)", [article_id, user_id])
             result = db.execute("SELECT MAX(id) FROM carts")
@@ -45,6 +50,18 @@ module TodoDB
                 amount += 1
             end
             db.execute("UPDATE carts SET amount =? WHERE id =?", [amount, result])
+        end
+    end
+
+    def remove_from_cart article_id, user_id
+        db = db_connect() 
+        db.results_as_hash = false
+        
+        amount = db.execute("SELECT amount FROM carts WHERE article_id = ? AND user_id = ?", [article_id, user_id]) 
+        amount = amount[0][0]
+        if amount != 0  
+            amount -=1
+            db.execute("UPDATE carts SET amount=? WHERE user_id=? AND article_id=?", [amount, user_id, article_id])
         end
     end
 
@@ -71,5 +88,9 @@ module TodoDB
             i += 1
         end
         return result, articles
+    end
+
+    def add_product(name, price, descripton, brand, type)
+
     end
 end

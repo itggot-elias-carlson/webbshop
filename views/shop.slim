@@ -4,8 +4,8 @@
     a href="/shop/glue" glue
 
 .shop
-    .search
-        h3 Search
+    / .search
+        / h3 Search
     .articles
         - i = 0
         - while i < articles.length
@@ -22,9 +22,13 @@
     - total_price = 0
     - if carts[1][0] != nil
         - while i < carts[1].length
-            p Article name: #{carts[1][i][0]} 
-            p Amount: #{carts[0][i][2]}
-            p Price: #{carts[1][i][1].to_i * carts[0][i][2].to_i} :-
+            - if carts[0][i][2] != 0
+                p Article name: #{carts[1][i][0]} 
+                p Amount: #{carts[0][i][2]}
+                p Price: #{carts[1][i][1].to_i * carts[0][i][2].to_i} :- 
+                form action="/remove_from_cart" method="POST"
+                   input type="hidden" value="#{carts[0][i][3]}" name="article_id"
+                   input type="submit" value="Remove from cart" 
             - total_price += carts[1][i][1].to_i * carts[0][i][2].to_i
             - i += 1
     p Total price: #{total_price} :-
