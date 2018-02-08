@@ -28,8 +28,9 @@ class App < Sinatra::Base
 		session[:user] = {"id"=>1, "name"=>"test", "email"=>nil, "password"=>"$2a$10$SRXb1zAYFQOBpjHm.A8zceKr/mRkOI.QJiT7N4duD6m20j6A2lwtm", "account_type"=>"admin", 0=>1, 1=>"test", 2=>nil, 3=>"$2a$10$SRXb1zAYFQOBpjHm.A8zceKr/mRkOI.QJiT7N4duD6m20j6A2lwtm", 4=>nil}		
 		user_id = session[:user]["id"]
 		account_type = get_account_type(user_id)
+		articles = get_articles()
 		if account_type == "admin"
-			slim(:admin, locals:{user: session[:user], error: session[:error]})
+			slim(:admin, locals:{user: session[:user], error: session[:error], articles: articles})
 		else
 			session[:error] = "Not authorized."
 			redirect(back)
@@ -80,6 +81,7 @@ class App < Sinatra::Base
 
 	post('/logout') do
 		session[:user] = nil
+		redirect back
 	end
 
 	post('/add_to_cart') do
@@ -98,13 +100,31 @@ class App < Sinatra::Base
 		redirect('/shop')
 	end
 
-	post('/add_product') do
+	post('/add_article') do
 		name = params[:article_name]
 		price = params[:article_price]
-		descripton = params[:article_description]
-		brand = params[:article_brand]
+		description = params[:article_description]
 		type = params[:article_type]
 
-		add_product(name, price, descripton, brand, type)
+		add_article(name, price, description, type)
 		redirect('/admin')
 	end
+
+	post('/remove_article') do
+		id = params[:article_id]
+		p id
+		remove_article(id)
+		redirect('/admin')
+	end
+
+	post('/change_article') do
+		id = params[:article_id]
+		name = params[:article_name]
+		price = params[:article_price]
+		description = params[:article_description]
+		type = params[:article_type]
+
+		change_article(id, name, price, description, type)
+		redirect('/admin')
+	end
+end

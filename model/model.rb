@@ -90,7 +90,18 @@ module TodoDB
         return result, articles
     end
 
-    def add_product(name, price, descripton, brand, type)
+    def add_article(name, price, description, type)
+        db = db_connect()
+        db.execute("INSERT INTO articles(name, price, description, type) VALUES (?,?,?,?)", [name, price, description, type])
+    end
 
+    def change_article(id, name, price, description, type)
+        db = db_connect()
+        db.execute("UPDATE articles SET name=?, price=?, description=?, type=? WHERE id=?", [name, price, description, type, id])
+    end
+
+    def remove_article(id)
+        db = db_connect()       
+        db.execute("DELETE FROM articles WHERE id=?", [id])
     end
 end

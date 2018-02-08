@@ -1,7 +1,29 @@
-form action=('/add_product') method="POST"
-    input type="text" name="article_name" placeholder="Article name"
-    input type="text" name="article_price" placeholder="Price"
-    input type="text" name="article_description" placeholder="Description"
-    input type="text" name="article_brand" placeholder="Brand"
-    input type="text" name="article_type" placeholder="Type"
-    input type="submit" value="Add product"
+wrapper#admin
+    h2 Add article
+    form action='/add_article' method="POST"
+        input type="text" name="article_name" placeholder="Article name"
+        input type="text" name="article_price" placeholder="Price"
+        input type="text" name="article_description" placeholder="Description"
+        / input type="text" name="article_brand" placeholder="Brand"
+        input type="text" name="article_type" placeholder="Type"
+        input type="submit" value="Add article"
+
+    - i = 0
+    - if articles != []
+        - while i < articles.length
+            p Article name: #{articles[i][1]}
+            p Price: #{articles[i][2]}
+            p Description: #{articles[i][3]}
+            p Type: #{articles[i][6]}
+            form action="/remove_article" method="POST"
+                input type="hidden" value="#{articles[i][0]}" name="article_id"
+                input type="submit" value="Remove article" 
+            form action='/change_article' method="POST"
+                input type="hidden" value="#{articles[i][0]}" name="article_id"            
+                input type="text" name="article_name" placeholder="Article name"
+                input type="text" name="article_price" placeholder="Price"
+                input type="text" name="article_description" placeholder="Description"
+                input type="text" name="article_type" placeholder="Type"
+                input type="submit" value="Change article"
+            - i += 1
+            
